@@ -2,8 +2,8 @@
 
 ## Выполняют:
 - **Backend**: Г.Никита, [https://github.com/swrwrks](https://github.com/swrwrks)
-- **Frontend**: Ш. Никита, [https://github.com/zy1sxxd](https://github.com/zy1sxxd)
-- **DataEngineer**: К. Егор, [https://github.com/Er4-ball](https://github.com/Er4-ball)
+- **Frontend**: Ш.Никита, [https://github.com/zy1sxxd](https://github.com/zy1sxxd)
+- **DataEngineer**: К.Егор, [https://github.com/Er4-ball](https://github.com/Er4-ball)
 
 ## Описание:
 Создание сайта автосалона, в котором пользование сайтом будет упрощено для массы пользователей. Большинство сайтов автосалонов является с избыточной информацией на одном экране, что затрудняет пользование сайтом для большей части пользователей.
