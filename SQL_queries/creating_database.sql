@@ -1,0 +1,2 @@
+CREATE DATABASE c4r_db;
+
