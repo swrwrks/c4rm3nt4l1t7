@@ -1,0 +1,24 @@
+<h1>Избранное</h1>
+<div class="page-container" id="favorites-list">
+    <p>Загрузка...</p>
+</div>
+
+<script>
+    // Логика отображения избранного
+    const favorites = JSON.parse(localStorage.getItem('bibobavto_favorites') || '[]');
+    const container = document.getElementById('favorites-list');
+
+    if (favorites.length === 0) {
+        container.innerHTML = '<p>Список избранного пуст</p>';
+    } else {
+        container.innerHTML = favorites.map(car => `
+            <div class="favorite-item">
+                <div class="fav-info">
+                    <h3>${car.name}</h3>
+                    <p>Год: ${car.year} | Цена: ${car.price.toLocaleString()} ₽</p>
+                </div>
+                <button class="btn-remove" onclick="window.removeFromFavorites(${car.id})">Удалить</button>
+            </div>
+        `).join('');
+    }
+</script>

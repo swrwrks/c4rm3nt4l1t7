@@ -1,0 +1,30 @@
+<h1>Настройки профиля</h1>
+<div class="form-container" style="max-width: 500px;">
+    <form id="settings-form">
+        <div class="form-group">
+            <label>Имя</label>
+            <input type="text" id="settings-name" required>
+        </div>
+
+        <div class="form-group">
+            <label>Email (нельзя изменить)</label>
+            <input type="email" id="settings-email" disabled style="background: #eee;">
+        </div>
+
+        <div class="form-group">
+            <label>Новый пароль</label>
+            <input type="password" id="settings-password" placeholder="Оставьте пустым, если не меняете">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+    </form>
+</div>
+
+<script>
+    // Заполняем текущие данные
+    const user = JSON.parse(localStorage.getItem('bibobavto_user'));
+    if (user) {
+        document.getElementById('settings-name').value = user.name;
+        document.getElementById('settings-email').value = user.email;
+    }
+</script>

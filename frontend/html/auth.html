@@ -1,0 +1,48 @@
+<div class="form-container">
+    <!-- Форма входа -->
+    <form id="login-form" class="auth-form">
+        <h2 class="form-title">Вход в аккаунт</h2>
+
+        <div class="form-group">
+            <label for="login-email">Email</label>
+            <input type="email" id="login-email" required placeholder="your@email.com">
+        </div>
+
+        <div class="form-group">
+            <label for="login-password">Пароль</label>
+            <input type="password" id="login-password" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Войти</button>
+
+        <div class="form-switch">
+            Нет аккаунта? <a href="#/register" data-link>Зарегистрироваться</a>
+        </div>
+    </form>
+
+    <!-- Форма регистрации -->
+    <form id="register-form" class="auth-form" style="display: none;">
+        <h2 class="form-title">Регистрация</h2>
+
+        <div class="form-group">
+            <label for="register-name">Имя</label>
+            <input type="text" id="register-name" required placeholder="Иван Иванов">
+        </div>
+
+        <div class="form-group">
+            <label for="register-email">Email</label>
+            <input type="email" id="register-email" required placeholder="your@email.com">
+        </div>
+
+        <div class="form-group">
+            <label for="register-password">Пароль</label>
+            <input type="password" id="register-password" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+
+        <div class="form-switch">
+            Уже есть аккаунт? <a href="#/login" data-link>Войти</a>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,30 @@
+<div class="form-container">
+    <h2 class="form-title">Личный кабинет</h2>
+
+    <div style="margin: 2rem 0; padding: 1rem; background: #f8f9fa; border-radius: 6px;">
+        <p><strong>Имя:</strong> <span id="profile-name"></span></p>
+        <p><strong>Email:</strong> <span id="profile-email"></span></p>
+    </div>
+
+    <div style="margin-top: 2rem;">
+        <h3>Разделы:</h3>
+        <ul class="profile-menu" style="list-style: none; padding: 0;">
+            <li><a href="#/favorites" data-link class="profile-link">Избранное</a></li>
+            <li><a href="#/requests" data-link class="profile-link">Мои заявки</a></li>
+            <li><a href="#/settings" data-link class="profile-link">Настройки</a></li>
+        </ul>
+    </div>
+
+    <button id="logout-btn" class="btn btn-secondary" style="margin-top: 2rem; width: 100%;">
+        Выйти из аккаунта
+    </button>
+</div>
+
+<script>
+    // Заполняем данные профиля
+    const user = JSON.parse(localStorage.getItem('bibobavto_user'));
+    if (user) {
+        document.getElementById('profile-name').textContent = user.name;
+        document.getElementById('profile-email').textContent = user.email;
+    }
+</script>
