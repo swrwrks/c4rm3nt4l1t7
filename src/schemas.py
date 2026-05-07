@@ -38,3 +38,20 @@ class CarCreate(CarBase):
 class Car(CarBase):
     id: int
     created_at: datetime
+
+
+class UserRegister(BaseModel):
+    username: str
+    password: str
+    email: str
+    phone: Optional[str] = None
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    user_id: Optional[int] = None

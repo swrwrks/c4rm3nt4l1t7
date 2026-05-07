@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from psycopg2 import pool
 from psycopg2.extras import RealDictCursor
 import os
+from src.security import get_password_hash
 
 load_dotenv()
 
@@ -50,3 +51,17 @@ class Database:
         print("Соединения закрыты")
 
 db = Database()
+
+def get_user_by_username(username: str):
+    query = "SELECT * FROM users WHERE user_name = %s AND is_active = TRUE"
+    return db.execute(query, (username,), fetch_one=True)
+
+def create_user(username: str, password: str, email: str, phone: str = None):
+    hashed_password = get_password_hash(password)
+    query = """
+        INSERT INTO users (user_name, password_hash, email, phone, role, is_active)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        RETURNING id, user_name, email, phone, role, is_active, created_at
+    """
+    params = (username, hashed_password, email, phone, "customer", True)
+    return db.execute(query, params, fetch_one=True)
