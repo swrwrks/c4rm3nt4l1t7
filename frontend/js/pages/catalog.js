@@ -1,4 +1,5 @@
-export async function CatalogPage() {
-    const response = await fetch('html/catalog.html');
-    return await response.text();
+export async function html() {
+    return (await fetch('html/catalog.html')).text();
 }
+
+export function init() {}

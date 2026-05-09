@@ -1,63 +1,58 @@
-console.log('>>> App.js: Старт');
-
 import { Router } from './router.js';
-import { updateAuthLink, login } from './auth.js';
+import { updateAuthLink } from './auth.js';
 
-// Импорт страниц
-import { HomePage } from './pages/home.js';
-import { CatalogPage } from './pages/catalog.js';
-import { AboutPage } from './pages/about.js';
-import { AuthPage } from './pages/auth.js';
-import { ProfilePage } from './pages/profile.js';
-import { NotFoundPage } from './pages/404.js';
+// Импортируем ВСЕ страницы
+import * as home from './pages/home.js';
+import * as catalog from './pages/catalog.js';
+import * as about from './pages/about.js';
+import * as auth from './pages/auth.js';
+import * as profile from './pages/profile.js';
+import * as settings from './pages/settings.js';
+import * as requests from './pages/requests.js';
+import * as favorites from './pages/favorites.js';
+import * as notFound from './pages/404.js';
 
-// Новые страницы
-import { FavoritesPage } from './pages/favorites.js';
-import { RequestsPage } from './pages/requests.js';
-import { SettingsPage } from './pages/settings.js';
-
-console.log('>>> App.js: Все страницы импортированы');
-
+// Карта маршрутов
 const routes = {
-    '/': HomePage,
-    '/catalog': CatalogPage,
-    '/about': AboutPage,
-    '/auth': AuthPage,
-    '/login': AuthPage,
-    '/register': AuthPage,
-    '/profile': ProfilePage,
-    '/favorites': FavoritesPage,
-    '/requests': RequestsPage,
-    '/settings': SettingsPage,
-    '/404': NotFoundPage
+    '/': home,
+    '/catalog': catalog,
+    '/about': about,
+    '/login': auth,
+    '/register': auth,
+    '/profile': profile,
+    '/settings': settings,
+    '/requests': requests,
+    '/favorites': favorites,
+    '/404': notFound
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('>>> App.js: DOM загружен');
-    const router = new Router(routes);
-    router.init();
+    // Запускаем роутер
+    new Router(routes).init();
+
+    // Обновляем кнопку входа
     updateAuthLink();
-
-    // Бургер-меню
-    const burgerBtn = document.querySelector('.burger-btn');
-    const navMenu = document.querySelector('.nav-menu');
-
-    burgerBtn?.addEventListener('click', () => {
-        navMenu?.classList.toggle('active');
-    });
 });
 
-// Слушатель форм
+// Глобальная обработка форм (вход / регистрация)
 document.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
     if (e.target.id === 'login-form') {
-        e.preventDefault();
-        const email = document.getElementById('login-email')?.value;
-        if (email) login({ name: email.split('@')[0], email }, 'mock_token');
+        const { login } = await import('./auth.js');
+        const username = document.getElementById('login-username').value;
+        const password = document.getElementById('login-password').value;
+        await login(username, password);
     }
+
+    // Обновленная логика регистрации
     if (e.target.id === 'register-form') {
-        e.preventDefault();
-        const name = document.getElementById('register-name')?.value;
-        const email = document.getElementById('register-email')?.value;
-        if (name && email) login({ name, email }, 'mock_token');
+        const { register } = await import('./auth.js');
+        const username = document.getElementById('register-username').value;
+        const email = document.getElementById('register-email').value; // Читаем email
+        const password = document.getElementById('register-password').value;
+
+        // Передаем 3 аргумента
+        await register(username, email, password);
     }
 });

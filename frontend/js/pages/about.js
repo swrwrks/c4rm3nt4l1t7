@@ -1,4 +1,5 @@
-export async function AboutPage() {
-    const response = await fetch('html/about.html');
-    return await response.text();
+export async function html() {
+    return (await fetch('html/about.html')).text();
 }
+
+export function init() {}

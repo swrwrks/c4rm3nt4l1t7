@@ -1,4 +1,5 @@
-export async function HomePage() {
-    const response = await fetch('html/home.html');
-    return await response.text();
+export async function html() {
+    return (await fetch('html/home.html')).text();
 }
+
+export function init() {}

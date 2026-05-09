@@ -1,40 +1,26 @@
-const BASE_URL = 'http://localhost:8000/api/v1';
-const TOKEN_KEY = 'bibobavto_token';
+// Простой API-клиент с авто-подстановкой токена
 
-class ApiClient {
-    constructor() {
-        this.baseUrl = BASE_URL;
-    }
-
+export const api = {
     async request(endpoint, options = {}) {
-        const url = `${this.baseUrl}${endpoint}`;
-        const token = localStorage.getItem(TOKEN_KEY);
+        const token = localStorage.getItem('token');
 
-        const config = {
+        const res = await fetch(`http://localhost:8000${endpoint}`, {
             headers: {
                 'Content-Type': 'application/json',
                 ...(token && { 'Authorization': `Bearer ${token}` }),
                 ...options.headers
             },
             ...options
-        };
+        });
 
-        try {
-            const response = await fetch(url, config);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            console.error('API request failed:', error);
-            throw error;
+        if (!res.ok) {
+            const err = await res.json();
+            throw new Error(err.detail || 'Ошибка');
         }
-    }
 
-    get(endpoint) { return this.request(endpoint); }
-    post(endpoint, data) { return this.request(endpoint, { method: 'POST', body: JSON.stringify(data) }); }
-    put(endpoint, data) { return this.request(endpoint, { method: 'PUT', body: JSON.stringify(data) }); }
-    delete(endpoint) { return this.request(endpoint, { method: 'DELETE' }); }
-}
+        return res.json();
+    },
 
-export const api = new ApiClient();
+    get: (url) => api.request(url),
+    post: (url, body) => api.request(url, { method: 'POST', body: JSON.stringify(body) })
+};

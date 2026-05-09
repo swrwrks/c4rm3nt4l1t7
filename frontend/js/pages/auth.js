@@ -1,20 +1,25 @@
-export async function AuthPage() {
-    const response = await fetch('html/auth.html');
-    const html = await response.text();
+export async function html() {
+    return (await fetch('html/auth.html')).text();
+}
 
-    // Показываем нужную форму в зависимости от URL
-    const currentPath = window.location.hash.slice(1) || '/';
-    const isRegisterView = currentPath === '/register';
+export function init() {
+    const isReg = window.location.hash === '#/register';
+    const loginBox = document.getElementById('login-form-container');
+    const registerBox = document.getElementById('register-form-container');
 
-    // Создаем временный div для манипуляций с HTML
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-
-    const loginForm = doc.querySelector('#login-form');
-    const registerForm = doc.querySelector('#register-form');
-
-    if (loginForm) loginForm.style.display = isRegisterView ? 'none' : 'block';
-    if (registerForm) registerForm.style.display = isRegisterView ? 'block' : 'none';
-
-    return doc.body.innerHTML;
+    if (loginBox && registerBox) {
+        if (isReg) {
+            // Показываем регистрацию, скрываем вход
+            loginBox.style.display = 'none';
+            registerBox.style.display = 'block';
+            // Прокрутка к началу
+            registerBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+            // Показываем вход, скрываем регистрацию
+            loginBox.style.display = 'block';
+            registerBox.style.display = 'none';
+            // Прокрутка к началу
+            loginBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
 }

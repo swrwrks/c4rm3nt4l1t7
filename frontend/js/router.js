@@ -1,39 +1,41 @@
 export class Router {
     constructor(routes) {
         this.routes = routes;
-        this.appContainer = document.getElementById('app');
+        this.container = document.getElementById('app');
     }
 
     async handleLocation() {
+        // Получаем путь из хеша (убираем #)
         const path = window.location.hash.slice(1) || '/';
-        const renderPage = this.routes[path] || this.routes['/404'];
 
-        if (this.appContainer) {
-            try {
-                const html = await renderPage();
-                this.appContainer.innerHTML = html;
-                this.highlightActiveLink(path);
-                this.executeInlineScripts();
-            } catch (error) {
-                console.error('Error loading page:', error);
-                this.appContainer.innerHTML = '<h1>Ошибка загрузки страницы</h1>';
+        // Находим модуль страницы
+        const pageModule = this.routes[path] || this.routes['/404'];
+
+        try {
+            // Проверяем, что модуль загружен и у него есть html()
+            if (!pageModule || typeof pageModule.html !== 'function') {
+                throw new Error('Страница не найдена или некорректна');
             }
+
+            // Рендерим HTML
+            this.container.innerHTML = await pageModule.html();
+
+            // Подсвечиваем активную ссылку
+            this.highlightActiveLink(path);
+
+            // Инициализируем страницу (если есть функция init)
+            if (typeof pageModule.init === 'function') {
+                pageModule.init();
+            }
+        } catch (error) {
+            console.error('Error loading page:', error);
+            this.container.innerHTML = `
+                <div class="card" style="text-align:center">
+                    <h2>Ошибка загрузки</h2>
+                    <p>${error.message}</p>
+                </div>
+            `;
         }
-    }
-
-    // Выполняем inline скрипты из HTML файлов
-    executeInlineScripts() {
-        const scripts = this.appContainer.querySelectorAll('script');
-        scripts.forEach(oldScript => {
-            const newScript = document.createElement('script');
-            if (oldScript.src) {
-                newScript.src = oldScript.src;
-            } else {
-                newScript.textContent = oldScript.textContent;
-            }
-            document.body.appendChild(newScript);
-            oldScript.remove();
-        });
     }
 
     highlightActiveLink(currentPath) {
@@ -43,22 +45,20 @@ export class Router {
         });
     }
 
-    navigate(path) {
-        window.location.hash = path;
-    }
-
     init() {
+        // Обработка изменения хеша
         window.addEventListener('hashchange', () => this.handleLocation());
 
+        // Перехват кликов по ссылкам
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a[data-link]');
             if (link) {
                 e.preventDefault();
-                const targetPath = link.getAttribute('href').replace('#', '');
-                this.navigate(targetPath);
+                window.location.hash = link.getAttribute('href');
             }
         });
 
+        // Первая загрузка
         this.handleLocation();
     }
 }
