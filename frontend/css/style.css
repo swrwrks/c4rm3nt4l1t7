@@ -345,3 +345,275 @@ footer {
     .auth-container,
     #app .card {
         padding: 1.5rem;
+    }
+}
+/* === 3 НЕДЕЛЯ: КАТАЛОГ === */
+
+/* Основной контейнер (2 колонки) */
+.catalog-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr; /* Левая колонка фикс, правая - гибкая */
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+/* Стили фильтров */
+.filters-panel {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    height: fit-content;
+}
+
+.filters-panel h3 {
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group {
+    margin-bottom: 1rem;
+}
+
+.filter-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.btn-block {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+/* Сетка автомобилей */
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Две колонки */
+    gap: 1.5rem;
+    align-content: start;
+}
+
+/* Карточка авто */
+.car-card {
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Серая заглушка картинки */
+.car-placeholder {
+    background: #f0f0f0;
+    height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #888;
+    font-weight: 500;
+}
+
+/* Информация в карточке */
+.car-details {
+    padding: 1.2rem;
+}
+
+.car-details h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.1rem;
+}
+
+.car-details p {
+    margin: 0 0 1rem 0;
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.car-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #dc3545; /* Красная цена */
+    margin-bottom: 1rem;
+}
+
+/* Кнопка избранного */
+.btn-fav {
+    width: 100%;
+    padding: 0.8rem;
+    background: #dc3545; /* Красная */
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.btn-fav:hover {
+    background: #c82333;
+}
+
+.btn-fav.active {
+    background: #ff6b6b; /* Светлее, если в избранном */
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .catalog-layout {
+        grid-template-columns: 1fr;
+    }
+}
+/* === СТРАНИЦА ИЗБРАННОГО === */
+.favorites-page {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.favorites-page h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.favorites-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.favorite-item {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.fav-car-info h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+}
+
+.fav-car-info p {
+    margin: 0 0 0.5rem 0;
+    color: #666;
+}
+
+.fav-price {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #dc3545;
+}
+
+.btn-remove {
+    padding: 0.7rem 1.5rem;
+    background: #6c757d;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background 0.2s;
+}
+
+.btn-remove:hover {
+    background: #5a6268;
+}
+
+@media (max-width: 600px) {
+    .favorite-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-remove {
+        width: 100%;
+    }
+}
+/* === КАТАЛОГ + ПАГИНАЦИЯ === */
+.catalog-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.filters-panel {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    height: fit-content;
+}
+
+.filter-group { margin-bottom: 1rem; }
+.filter-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; color: #555; }
+.filter-group select, .filter-group input {
+    width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
+}
+
+.cars-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    align-content: start;
+}
+
+.car-card {
+    background: #fff; border-radius: 12px; overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column;
+    transition: transform 0.2s;
+}
+.car-card:hover { transform: translateY(-4px); }
+
+.car-placeholder {
+    background: #f0f0f0; height: 180px; display: flex; align-items: center;
+    justify-content: center; color: #888; font-weight: 500;
+}
+
+.car-details { padding: 1.2rem; display: flex; flex-direction: column; flex-grow: 1; }
+.car-details h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
+.car-details p { margin: 0 0 1rem 0; color: #666; font-size: 0.9rem; }
+.car-price { font-size: 1.3rem; font-weight: 700; color: #dc3545; margin-bottom: 1rem; }
+
+.btn-fav {
+    margin-top: auto; width: 100%; padding: 0.8rem; background: #dc3545; color: #fff;
+    border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background 0.2s;
+}
+.btn-fav:hover { background: #c82333; }
+.btn-fav.active { background: #ff6b6b; }
+
+/* Пагинация */
+.pagination {
+    display: flex; justify-content: center; align-items: center; gap: 1rem;
+    margin-top: 2rem; padding: 1rem 0;
+}
+.btn-pagination {
+    padding: 0.6rem 1.2rem; background: #fff; border: 2px solid #dc3545; color: #dc3545;
+    border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-pagination:hover:not(:disabled) { background: #dc3545; color: #fff; }
+.btn-pagination:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
+#page-info { font-size: 1rem; color: #555; font-weight: 500; }
+
+@media (max-width: 768px) {
+    .catalog-layout { grid-template-columns: 1fr; }
+}
