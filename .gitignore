@@ -17,7 +17,8 @@ Thumbs.db
 
 
 .env
-
+flask_admin/.env
+.env.*
 
 *.log
 build/

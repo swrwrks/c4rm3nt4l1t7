@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head><title>Dashboard</title></head>
+<body style="font-family:sans-serif;max-width:1400px;margin:20px auto;">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h2>Управление автомобилями</h2>
+    <a href="{{ url_for('logout') }}" style="color:red;">Выйти</a>
+  </div>
+
+  {% with messages = get_flashed_messages() %}
+    {% if messages %}<p style="color:green;font-weight:bold;">{{ messages[0] }}</p>{% endif %}
+  {% endwith %}
+
+  <details style="margin:20px 0;padding:15px;background:#f5f5f5;border-radius:5px;">
+    <summary><strong>Добавить машину</strong></summary>
+    <form action="{{ url_for('add_car') }}" method="post" style="margin-top:15px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+      <input type="text" name="model" placeholder="Модель" required>
+      <input type="number" name="price" placeholder="Цена" step="0.01" required>
+      <input type="number" name="year" placeholder="Год" min="1990" max="2025" required>
+      <input type="text" name="color" placeholder="Цвет">
+      <input type="number" name="mileage" placeholder="Пробег" min="0">
+      <select name="brand_id">
+        <option value="">Выберите бренд</option>
+        {% for brand in brands %}
+          <option value="{{ brand.id }}">{{ brand.name }}</option>
+        {% endfor %}
+      </select>
+      <select name="status">
+        <option value="available">В наличии</option>
+        <option value="sold">Продана</option>
+        <option value="reserved">Забронирована</option>
+      </select>
+      <button type="submit" style="grid-column:span 3;padding:10px;background:#28a745;color:white;border:none;cursor:pointer;">Добавить</button>
+    </form>
+  </details>
+
+  <table style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr style="background:#333;color:white;">
+        <th style="padding:10px;text-align:left;">ID</th>
+        <th>Бренд</th>
+        <th>Модель</th>
+        <th>Год</th>
+        <th>Цена</th>
+        <th>Цвет</th>
+        <th>Пробег</th>
+        <th>Статус</th>
+        <th>Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for car in cars %}
+      <tr style="border-bottom:1px solid #ddd;">
+        <td style="padding:10px;">{{ car.id }}</td>
+        <td>{{ car.brand_name or '-' }}</td>
+        <td>{{ car.model }}</td>
+        <td>{{ car.year }}</td>
+        <td>{{ car.price }} ₽</td>
+        <td>{{ car.color or '-' }}</td>
+        <td>{{ car.mileage or '-' }}</td>
+        <td>{{ car.status }}</td>
+        <td>
+          <button onclick="toggleEdit({{ car.id }})" style="padding:5px 10px;cursor:pointer;">Изменить</button>
+          <form action="{{ url_for('delete_car', car_id=car.id) }}" method="post" style="display:inline;" onsubmit="return confirm('Удалить?');">
+            <button type="submit" style="padding:5px 10px;background:#dc3545;color:white;border:none;cursor:pointer;">Удалить</button>
+          </form>
+
+          <form id="edit-{{ car.id }}" action="{{ url_for('edit_car', car_id=car.id) }}" method="post" style="display:none;margin-top:10px;padding:10px;background:#fff3cd;border-radius:3px;grid-template-columns:1fr 1fr;gap:10px;">
+            <input type="text" name="model" value="{{ car.model }}" required style="padding:8px;">
+            <input type="number" name="price" value="{{ car.price }}" step="0.01" required style="padding:8px;">
+            <input type="number" name="year" value="{{ car.year }}" required style="padding:8px;">
+            <input type="text" name="color" value="{{ car.color or '' }}" style="padding:8px;">
+            <input type="number" name="mileage" value="{{ car.mileage or '' }}" style="padding:8px;">
+            <select name="brand_id" style="padding:8px;">
+              <option value="">Выберите бренд</option>
+              {% for brand in brands %}
+                <option value="{{ brand.id }}" {% if car.brand_id == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+              {% endfor %}
+            </select>
+            <select name="status" style="padding:8px;">
+              <option value="available" {% if car.status == 'available' %}selected{% endif %}>В наличии</option>
+              <option value="sold" {% if car.status == 'sold' %}selected{% endif %}>Продана</option>
+              <option value="reserved" {% if car.status == 'reserved' %}selected{% endif %}>Забронирована</option>
+            </select>
+            <div style="grid-column:span 2;">
+              <button type="submit" style="padding:5px 15px;background:#007bff;color:white;border:none;cursor:pointer;">Сохранить</button>
+              <button type="button" onclick="toggleEdit({{ car.id }})" style="padding:5px 15px;cursor:pointer;">Отмена</button>
+            </div>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <script>
+    function toggleEdit(id) {
+      const form = document.getElementById('edit-' + id);
+      form.style.display = form.style.display === 'none' ? 'grid' : 'none';
+    }
+  </script>
+</body>
+</html>
