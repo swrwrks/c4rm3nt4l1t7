@@ -1,16 +1,18 @@
-<div class="profile-card">
-    <h2 style="text-align: center; margin-bottom: 1.5rem;">Личный кабинет</h2>
+<div class="profile-wrapper">
+    <div class="profile-card">
+        <h2 class="profile-title">Личный кабинет</h2>
 
-    <div class="profile-info">
-        <p><strong>Username:</strong> <span id="profile-username">Загрузка...</span></p>
-        <p><strong>Email:</strong> <span id="profile-email">Не указан</span></p>
-        <p><strong>ID:</strong> <span id="profile-id">Загрузка...</span></p>
+        <div class="profile-data">
+            <div class="data-row"><span class="label">Username:</span> <span id="p-username" class="value">—</span></div>
+            <div class="data-row"><span class="label">ID:</span> <span id="p-id" class="value">—</span></div>
+            <div class="data-row"><span class="label">Email:</span> <span id="p-email" class="value">—</span></div>
+            <div class="data-row"><span class="label">Телефон:</span> <span id="p-phone" class="value">—</span></div>
+        </div>
+
+        <div class="profile-actions">
+            <a href="#/favorites" class="btn-compact" data-link>❤️ Избранное</a>
+            <a href="#/settings" class="btn-compact" data-link>⚙️ Настройки</a>
+            <button id="logout-btn" class="btn-compact btn-logout">🚪 Выйти</button>
+        </div>
     </div>
-
-    <div class="profile-menu">
-        <a href="#/favorites" data-link class="menu-link">Избранное</a>
-        <a href="#/settings" data-link class="menu-link">Настройки</a>
-    </div>
-
-    <button id="logout-btn" class="btn btn-primary btn-block" style="margin-top: 1.5rem; background: #dc3545;">Выйти</button>
 </div>

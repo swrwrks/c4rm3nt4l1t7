@@ -1,162 +1,152 @@
-// 🔴 НАСТРОЙКА: true = тестирование без бэкенда, false = работа с реальным API
-const USE_MOCK = true;
-
+const API_BASE = 'http://localhost:8000';
 const TOKEN_KEY = 'bibobavto_token';
 const USER_KEY = 'bibobavto_user';
 
-// Тестовая база пользователей
-const mockDB = [
-    { username: 'admin', password: '123', id: 1 },
-    { username: 'test', password: '123', id: 2 }
-];
-
-// Декодирование JWT токена
+// 🔹 Декодирование JWT токена (без проверки подписи, только для чтения данных на клиенте)
 function decodeJWT(token) {
     try {
         const payload = token.split('.')[1];
-        const decoded = decodeURIComponent(atob(payload.replace(/-/g, '+').replace(/_/g, '/'))
-            .split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join(''));
-        return JSON.parse(decoded);
-    } catch {
+        // atob декодирует base64 строку в читаемый JSON
+        return JSON.parse(atob(payload));
+    } catch (error) {
+        console.error('Ошибка декодирования JWT:', error);
         return null;
     }
 }
 
-// Генерация тестового токена
-function createMockToken(user) {
-    const header = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
-    const payload = btoa(JSON.stringify({
-        sub: user.username,
-        user_id: user.id,
-        exp: Date.now() / 1000 + 3600
-    }));
-    return `${header}.${payload}.mock`;
+// 🔹 ВХОД В СИСТЕМУ
+export async function login(username, password) {
+    // Backend использует OAuth2PasswordRequestForm, поэтому отправляем form-data
+    const formData = new URLSearchParams();
+    formData.append('username', username);
+    formData.append('password', password);
+
+    const res = await fetch(`${API_BASE}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: formData
+    });
+
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Ошибка входа');
+    }
+
+    const data = await res.json();
+
+    // 1. Сохраняем токен
+    localStorage.setItem(TOKEN_KEY, data.access_token);
+
+    // 2. Декодируем и сохраняем данные пользователя
+    const payload = decodeJWT(data.access_token);
+    if (payload) {
+        localStorage.setItem(USER_KEY, JSON.stringify({
+            username: payload.sub,
+            user_id: payload.user_id,
+            email: payload.email || null,    // Будет null, если backend не кладёт email в токен
+            phone: payload.phone || null     // Будет null, если backend не кладёт phone в токен
+        }));
+    }
+
+    // 3. Мгновенно обновляем интерфейс (кнопку в шапке)
+    if (typeof window.updateAuthLink === 'function') {
+        window.updateAuthLink();
+    }
+
+    // 4. Перенаправляем на главную
+    window.location.hash = '#/';
 }
 
-// Проверка авторизации
+// 🔹 РЕГИСТРАЦИЯ
+export async function register(username, password, email, phone = null) {
+    const res = await fetch(`${API_BASE}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            username,
+            password,
+            email,
+            phone: phone || null
+        })
+    });
+
+    if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Ошибка регистрации');
+    }
+
+    // Успешная регистрация: переключаем на форму входа
+    const loginContainer = document.getElementById('login-form-container');
+    const registerContainer = document.getElementById('register-form-container');
+
+    if (loginContainer && registerContainer) {
+        registerContainer.classList.add('hidden');
+        loginContainer.classList.remove('hidden');
+    }
+
+    alert('Регистрация успешна! Теперь войдите.');
+}
+
+// 🔹 ВЫХОД ИЗ СИСТЕМЫ
+export function logout() {
+    localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(USER_KEY);
+
+    // Сбрасываем кнопку в шапке
+    const btn = document.getElementById('auth-link');
+    if (btn) {
+        btn.textContent = 'Вход / Регистрация';
+        btn.href = '#/auth';
+        btn.classList.remove('auth-user');
+        btn.classList.add('btn');
+    }
+
+    window.location.hash = '#/';
+}
+
+// 🔹 ПРОВЕРКА АВТОРИЗАЦИИ
 export function isAuthenticated() {
-    return !!localStorage.getItem(TOKEN_KEY);
+    return localStorage.getItem(TOKEN_KEY) !== null;
 }
 
-// Получение текущего пользователя
+// 🔹 ПОЛУЧЕНИЕ ДАННЫХ ПОЛЬЗОВАТЕЛЯ
 export function getCurrentUser() {
-    const cached = localStorage.getItem(USER_KEY);
-    if (cached) return JSON.parse(cached);
-
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return null;
 
     const payload = decodeJWT(token);
-    if (payload?.sub) {
-        const user = { username: payload.sub, user_id: payload.user_id || payload.id };
-        localStorage.setItem(USER_KEY, JSON.stringify(user));
-        return user;
-    }
-    return null;
+    return {
+        username: payload?.sub,
+        user_id: payload?.user_id,
+        email: payload?.email,
+        phone: payload?.phone
+    };
 }
 
-// Вход в систему
-export async function login(username, password) {
-    try {
-        if (USE_MOCK) {
-            await new Promise(r => setTimeout(r, 400));
-            const user = mockDB.find(u => u.username === username && u.password === password);
-            if (!user) throw new Error('Неверный логин или пароль');
-
-            localStorage.setItem(TOKEN_KEY, createMockToken(user));
-            localStorage.setItem(USER_KEY, JSON.stringify({ username: user.username, user_id: user.id }));
-        } else {
-            const form = new URLSearchParams();
-            form.append('username', username);
-            form.append('password', password);
-
-            const res = await fetch('http://localhost:8000/auth/login', {
-                method: 'POST',
-                body: form // Браузер сам поставит правильный Content-Type для form-data
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.detail || 'Ошибка входа');
-            }
-
-            const data = await res.json();
-            localStorage.setItem(TOKEN_KEY, data.access_token);
-
-            const payload = decodeJWT(data.access_token);
-            if (payload) {
-                localStorage.setItem(USER_KEY, JSON.stringify({
-                    username: payload.sub,
-                    user_id: payload.user_id,
-                    email: payload.email
-                }));
-            }
-        }
-
-        updateAuthLink();
-        window.location.hash = '#/profile';
-    } catch (e) {
-        alert(e.message);
-    }
-}
-
-// Обновленная функция регистрации
-export async function register(username, email, password) {
-    try {
-        if (USE_MOCK) {
-            await new Promise(r => setTimeout(r, 400));
-            if (mockDB.some(u => u.username === username)) throw new Error('Пользователь уже существует');
-
-            mockDB.push({ username, password, email, id: mockDB.length + 1 });
-
-            // 🔹 Добавь эти строки ПЕРЕД login():
-            localStorage.setItem('bibobavto_user', JSON.stringify({
-                username: username,
-                user_id: mockDB.length,
-                email: email  // ← Сохраняем email
-            }));
-
-            await login(username, password);
-        } else {
-            const res = await fetch('http://localhost:8000/auth/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                // Отправляем email вместе с остальными данными
-                body: JSON.stringify({ username, email, password })
-            });
-
-            if (!res.ok) {
-                const err = await res.json();
-                throw new Error(err.detail || 'Ошибка регистрации');
-            }
-        }
-        // После успешной регистрации сразу логиним пользователя
-        await login(username, password);
-    } catch (e) {
-        alert(e.message);
-    }
-}
-
-
-// Выход из системы
-export function logout() {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(USER_KEY);
-    updateAuthLink();
-    window.location.hash = '#/';
-}
-
-// Обновление кнопки в шапке
+// 🔹 ОБНОВЛЕНИЕ КНОПКИ В ШАПКЕ
 export function updateAuthLink() {
-    const link = document.getElementById('auth-link');
-    if (!link) return;
+    const btn = document.getElementById('auth-link');
+    if (!btn) return;
 
     if (isAuthenticated()) {
-        const user = getCurrentUser();
-        link.href = '#/profile';
-        link.textContent = user?.username || 'Профиль';
+        const user = JSON.parse(localStorage.getItem(USER_KEY) || '{}');
+        btn.textContent = user.username || 'Профиль';
+        btn.href = '#/profile';
+        btn.classList.add('auth-user');
+        btn.classList.remove('btn');
     } else {
-        link.href = '#/login';
-        link.textContent = 'Вход';
+        btn.textContent = 'Вход / Регистрация';
+        btn.href = '#/auth';
+        btn.classList.remove('auth-user');
+        btn.classList.add('btn');
     }
+}
+
+// 🔹 ЗАЩИТА МАРШРУТОВ
+export function requireAuth() {
+    if (!isAuthenticated()) {
+        window.location.hash = '#/auth';
+        return false;
+    }
+    return true;
 }

@@ -57,7 +57,7 @@ export function init() {
                         <p>${car.year} г. • ${car.color} • ${car.mileage?.toLocaleString() || 'N/A'} км</p>
                         <div class="car-price">${formatPrice(car.price)}</div>
                         <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${car.id}">
-                            ${isFav ? '❤️ В избранном' : '❤️ В избранное'}
+                            ${isFav ? 'В избранном' : 'В избранное'}
                         </button>
                     </div>
                 </div>
@@ -191,7 +191,7 @@ export function init() {
         if (btn) {
             const isFav = favs.includes(id);
             btn.classList.toggle('active', isFav);
-            btn.textContent = isFav ? '❤️ В избранном' : '❤️ В избранное';
+            btn.textContent = isFav ? 'В избранном' : 'В избранное';
         }
     };
 

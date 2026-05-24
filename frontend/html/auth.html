@@ -1,44 +1,101 @@
-<div class="auth-container">
-    <!-- Форма входа (без изменений) -->
-    <div id="login-form-container">
-        <h2>Вход</h2>
-        <form id="login-form">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="login-username" required placeholder="admin">
-            </div>
-            <div class="form-group">
-                <label>Пароль</label>
-                <input type="password" id="login-password" required placeholder="••••••••">
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Войти</button>
-        </form>
-        <p class="auth-switch">
-            Нет аккаунта? <a href="#/register" data-link>Зарегистрироваться</a>
-        </p>
-    </div>
+<div class="auth-page">
+    <div class="auth-card">
+        <!-- Форма входа -->
+        <div id="login-form-container">
+            <h2>Вход в аккаунт</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-username">Username</label>
+                    <input
+                        type="text"
+                        id="login-username"
+                        required
+                        placeholder="Введите username"
+                        autocomplete="username"
+                    >
+                </div>
 
-    <!-- Форма регистрации (добавлено поле Email) -->
-    <div id="register-form-container" class="hidden">
-        <h2>Регистрация</h2>
-        <form id="register-form">
-            <div class="form-group">
-                <label>Username</label>
-                <input type="text" id="register-username" required>
+                <div class="form-group">
+                    <label for="login-password">Пароль</label>
+                    <input
+                        type="password"
+                        id="login-password"
+                        required
+                        placeholder="Введите пароль"
+                        autocomplete="current-password"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Войти
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Нет аккаунта?
+                    <a href="#" id="show-register">Зарегистрироваться</a>
+                </p>
             </div>
-            <!-- 🆕 Новое поле Email -->
-            <div class="form-group">
-                <label>Email</label>
-                <input type="email" id="register-email" required placeholder="mail@example.com">
+        </div>
+
+        <!-- Форма регистрации -->
+        <div id="register-form-container" class="hidden">
+            <h2>Регистрация</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">Username</label>
+                    <input
+                        type="text"
+                        id="register-username"
+                        required
+                        placeholder="Придумайте username"
+                        autocomplete="username"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input
+                        type="email"
+                        id="register-email"
+                        required
+                        placeholder="mail@example.com"
+                        autocomplete="email"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="register-phone">Телефон (необязательно)</label>
+                    <input
+                        type="tel"
+                        id="register-phone"
+                        placeholder="+7 (999) 123-45-67"
+                        autocomplete="tel"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="register-password">Пароль</label>
+                    <input
+                        type="password"
+                        id="register-password"
+                        required
+                        placeholder="Придумайте пароль"
+                        autocomplete="new-password"
+                        minlength="6"
+                    >
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block">
+                    Зарегистрироваться
+                </button>
+            </form>
+
+            <div class="auth-footer">
+                <p>Уже есть аккаунт?
+                    <a href="#" id="show-login">Войти</a>
+                </p>
             </div>
-            <div class="form-group">
-                <label>Пароль</label>
-                <input type="password" id="register-password" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Зарегистрироваться</button>
-        </form>
-        <p class="auth-switch">
-            Уже есть аккаунт? <a href="#/login" data-link>Войти</a>
-        </p>
+        </div>
     </div>
 </div>

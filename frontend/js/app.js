@@ -1,14 +1,12 @@
 import { Router } from './router.js';
 import { updateAuthLink } from './auth.js';
 
-// Импортируем ВСЕ страницы
+// Импорты страниц
 import * as home from './pages/home.js';
 import * as catalog from './pages/catalog.js';
 import * as about from './pages/about.js';
 import * as auth from './pages/auth.js';
 import * as profile from './pages/profile.js';
-import * as settings from './pages/settings.js';
-import * as requests from './pages/requests.js';
 import * as favorites from './pages/favorites.js';
 import * as notFound from './pages/404.js';
 
@@ -17,20 +15,14 @@ const routes = {
     '/': home,
     '/catalog': catalog,
     '/about': about,
-    '/login': auth,
-    '/register': auth,
+    '/auth': auth,
     '/profile': profile,
-    '/settings': settings,
-    '/requests': requests,
     '/favorites': favorites,
     '/404': notFound
 };
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Запускаем роутер
     new Router(routes).init();
-
-    // Обновляем кнопку входа
     updateAuthLink();
 });
 

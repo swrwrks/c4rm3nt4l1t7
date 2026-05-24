@@ -617,3 +617,112 @@ footer {
 @media (max-width: 768px) {
     .catalog-layout { grid-template-columns: 1fr; }
 }
+/* === КОМПАКТНЫЙ ПРОФИЛЬ И СТРАНИЦЫ === */
+.profile-wrapper, .page-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+    min-height: 60vh;
+}
+
+.profile-card, .page-card {
+    background: #fff;
+    padding: 1.8rem;
+    border-radius: 14px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.07);
+    width: 100%;
+    max-width: 420px;
+}
+
+.profile-title, .page-title {
+    text-align: center;
+    margin: 0 0 1.5rem;
+    font-size: 1.4rem;
+    color: #222;
+}
+
+/* Данные пользователя */
+.profile-data { margin-bottom: 1.5rem; }
+.data-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 0.95rem;
+}
+.data-row:last-child { border-bottom: none; }
+.data-row .label { color: #666; font-weight: 500; }
+.data-row .value { font-weight: 600; color: #111; text-align: right; }
+
+/* Компактные кнопки */
+.profile-actions { display: flex; flex-direction: column; gap: 0.7rem; }
+.btn-compact {
+    display: block;
+    width: 100%;
+    padding: 0.75rem;
+    text-align: center;
+    border-radius: 9px;
+    border: 1.5px solid #e8e8e8;
+    background: #fafafa;
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+.btn-compact:hover {
+    background: #fff;
+    border-color: #dc3545;
+    color: #dc3545;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+}
+.btn-logout { border-color: #ff4d4f; color: #ff4d4f; }
+.btn-logout:hover { background: #ff4d4f; color: #fff; }
+.btn-primary { background: #dc3545; color: #fff; border: none; }
+.btn-primary:hover { background: #c82333; color: #fff; transform: translateY(-2px); }
+
+/* Избранное */
+.favorites-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+.fav-item-compact {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.7rem 1rem;
+    background: #f8f9fa;
+    border-radius: 8px;
+    font-size: 0.95rem;
+}
+.btn-remove-sm {
+    background: none;
+    border: none;
+    color: #999;
+    font-size: 1.1rem;
+    cursor: pointer;
+    padding: 0 0.3rem;
+    transition: color 0.2s;
+}
+.btn-remove-sm:hover { color: #dc3545; }
+
+.empty-state { text-align: center; padding: 1.5rem 0; }
+.empty-state p { margin: 0 0 1rem; color: #666; font-size: 0.95rem; }
+
+/* Настройки */
+.compact-form .form-group { margin-bottom: 1rem; }
+.compact-form label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: #555; font-weight: 500; }
+.compact-form input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: border-color 0.2s;
+}
+.compact-form input:focus { outline: none; border-color: #dc3545; }
+
+/* Мобильная адаптация */
+@media (max-width: 480px) {
+    .profile-card, .page-card { padding: 1.4rem; }
+    .profile-title, .page-title { font-size: 1.25rem; }
+}
