@@ -1,6 +1,5 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
-from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from dotenv import load_dotenv
 import psycopg2
 from psycopg2.extras import RealDictCursor
@@ -23,52 +22,7 @@ def get_db_connection():
     return psycopg2.connect(**DB_CONFIG)
 
 
-class AdminUser(UserMixin):
-    def __init__(self, username):
-        self.id = username
-        self.username = username
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    if user_id == os.getenv('ADMIN_USERNAME'):
-        return AdminUser(user_id)
-    return None
-
-
-def verify_admin_password(password):
-    admin_pass = os.getenv('ADMIN_PASSWORD')
-    return password == admin_pass
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        if username == os.getenv('ADMIN_USERNAME') and verify_admin_password(password):
-            user = AdminUser(username)
-            login_user(user)
-            return redirect(url_for('dashboard'))
-        flash('Неверный логин или пароль')
-    return render_template('login.html')
-
-
-@app.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('login'))
-
-
 @app.route('/')
-@login_required
 def dashboard():
     conn = get_db_connection()
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -91,7 +45,6 @@ def dashboard():
 
 
 @app.route('/car/add', methods=['POST'])
-@login_required
 def add_car():
     model = request.form.get('model')
     price = float(request.form.get('price'))
@@ -116,7 +69,6 @@ def add_car():
 
 
 @app.route('/car/<int:car_id>/edit', methods=['POST'])
-@login_required
 def edit_car(car_id):
     model = request.form.get('model')
     price = float(request.form.get('price'))
@@ -142,7 +94,6 @@ def edit_car(car_id):
 
 
 @app.route('/car/<int:car_id>/delete', methods=['POST'])
-@login_required
 def delete_car(car_id):
     conn = get_db_connection()
     cur = conn.cursor()

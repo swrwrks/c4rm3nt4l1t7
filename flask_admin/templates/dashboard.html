@@ -2,10 +2,8 @@
 <html>
 <head><title>Dashboard</title></head>
 <body style="font-family:sans-serif;max-width:1400px;margin:20px auto;">
-  <div style="display:flex;justify-content:space-between;align-items:center;">
-    <h2>Управление автомобилями</h2>
-    <a href="{{ url_for('logout') }}" style="color:red;">Выйти</a>
-  </div>
+<h2>Управление автомобилями</h2>
+
 
   {% with messages = get_flashed_messages() %}
     {% if messages %}<p style="color:green;font-weight:bold;">{{ messages[0] }}</p>{% endif %}

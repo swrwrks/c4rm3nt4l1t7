@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict
+from pydantic_settings import BaseSettings
 from typing import Optional
 from datetime import datetime
 
@@ -55,3 +56,18 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
     user_id: Optional[int] = None
+
+
+class Settings(BaseSettings):
+    DB_HOST: str
+    DB_NAME: str
+    DB_USER: str
+    DB_PASSWORD: str
+    DB_PORT: int
+    SECRET_KEY: str
+    APP_NAME: str = "Honda/Subaru Dealership"
+
+    class Config:
+        env_file = ".env"
+
+settings = Settings()

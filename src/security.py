@@ -4,7 +4,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from src.config import settings
+from src.schemas import settings
 from pydantic import BaseModel
 
 SECRET_KEY = settings.SECRET_KEY
