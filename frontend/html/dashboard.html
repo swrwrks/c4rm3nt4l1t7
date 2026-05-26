@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Аналитика</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .chart-box {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .chart-box h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.5em;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 350px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 100px;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .error {
+            background: #fee;
+            color: #c00;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .btn-refresh {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 40px;
+            background: white;
+            color: #667eea;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-refresh:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .stat-card .number {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>📊 Аналитика автосалона</h1>
+
+        <div id="content">
+            <div class="loading">Загрузка данных...</div>
+        </div>
+
+        <button class="btn-refresh" onclick="loadDashboard()">🔄 Обновить данные</button>
+    </div>
+
+    <script>
+        // МОКОВЫЕ ДАННЫЕ (замени на реальные данные из БД)
+        const MOCK_DATA = {
+            stats: {
+                cars_total: 4,
+                brands_total: 2,
+                users_total: 3,
+                available: 4,
+                reserved: 0,
+                sold: 0
+            },
+            brands: [
+                { name: 'Subaru', count: 2 },
+                { name: 'Hyundai', count: 2 }
+            ],
+            status: {
+                available: 4,
+                reserved: 0,
+                sold: 0
+            }
+        };
+
+        let brandsChart = null;
+        let statusChart = null;
+
+        async function loadDashboard() {
+            const content = document.getElementById('content');
+
+            try {
+                // Имитация загрузки
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                const stats = MOCK_DATA.stats;
+                const brands = MOCK_DATA.brands;
+                const status = MOCK_DATA.status;
+
+                content.innerHTML = `
+                    <div class="stats-cards">
+                        <div class="stat-card">
+                            <div class="number">${stats.cars_total}</div>
+                            <div class="label">Всего машин</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="number">${stats.brands_total}</div>
+                            <div class="label">Брендов</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="number">${stats.users_total}</div>
+                            <div class="label">Пользователей</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="number" style="color: #48bb78">${stats.available}</div>
+                            <div class="label">Доступно</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="number" style="color: #ed8936">${stats.reserved}</div>
+                            <div class="label">Зарезервировано</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="number" style="color: #f56565">${stats.sold}</div>
+                            <div class="label">Продано</div>
+                        </div>
+                    </div>
+
+                    <div class="charts-container">
+                        <div class="chart-box">
+                            <h2>Количество машин по брендам</h2>
+                            <div class="chart-wrapper">
+                                <canvas id="brandsChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="chart-box">
+                            <h2>Статус автомобилей</h2>
+                            <div class="chart-wrapper">
+                                <canvas id="statusChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                setTimeout(() => {
+                    renderBrandsChart(brands);
+                    renderStatusChart(status);
+                }, 100);
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                content.innerHTML = `
+                    <div class="error">
+                        <h2>❌ Ошибка загрузки данных</h2>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function renderBrandsChart(brands) {
+            if (brandsChart) brandsChart.destroy();
+
+            const ctx = document.getElementById('brandsChart').getContext('2d');
+
+            brandsChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: brands.map(b => b.name),
+                    datasets: [{
+                        label: 'Количество автомобилей',
+                        data: brands.map(b => b.count),
+                        backgroundColor: ['#667eea', '#764ba2', '#f093fb', '#f5576c'],
+                        borderWidth: 0,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        }
+
+        function renderStatusChart(status) {
+            if (statusChart) statusChart.destroy();
+
+            const ctx = document.getElementById('statusChart').getContext('2d');
+
+            statusChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Доступно', 'Зарезервировано', 'Продано'],
+                    datasets: [{
+                        data: [status.available, status.reserved, status.sold],
+                        backgroundColor: ['#48bb78', '#ed8936', '#f56565'],
+                        borderWidth: 3,
+                        borderColor: '#fff'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+        }
+
+        // Автозагрузка при открытии страницы
+        document.addEventListener('DOMContentLoaded', loadDashboard);
+    </script>
+</body>
+</html>
