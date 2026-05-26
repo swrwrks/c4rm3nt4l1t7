@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse
 import json
 import hashlib
 from pathlib import Path
+from src.db_connector import db
+from datetime import datetime
 
 router = APIRouter(tags=["About & Hash"])
 
@@ -174,4 +176,17 @@ def hash_string(text: str):
     return {
         "request": text,
         "result": hash_result
+    }
+
+@router.get("/api/support")
+def support_data():
+    cars = db.execute("SELECT COUNT(*) as count FROM cars", fetch_one=True)['count']
+    brands = db.execute("SELECT COUNT(*) as count FROM brands", fetch_one=True)['count']
+    users = db.execute("SELECT COUNT(*) as count FROM users", fetch_one=True)['count']
+
+    return {
+        "service": "Supporting",
+        "analytics": {"cars": cars, "brands": brands, "users": users},
+        "auth": {"status": "active", "type": "JWT"},
+        "notifications": [{"msg": "API Gateway connected"}]
     }

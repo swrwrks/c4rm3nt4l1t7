@@ -39,7 +39,7 @@ class CarCreate(CarBase):
 class Car(CarBase):
     id: int
     created_at: datetime
-
+    favorites_count: int = 0
 
 class UserRegister(BaseModel):
     username: str
@@ -56,6 +56,11 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     username: Optional[str] = None
     user_id: Optional[int] = None
+
+
+class PasswordUpdate(BaseModel):
+    old_password: str
+    new_password: str
 
 
 class Settings(BaseSettings):

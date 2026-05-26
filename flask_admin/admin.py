@@ -41,7 +41,7 @@ def dashboard():
     cur.close()
     conn.close()
 
-    return render_template('dashboard.html', cars=cars, brands=brands)
+    return render_template('dashboard1.html', cars=cars, brands=brands)
 
 
 @app.route('/car/add', methods=['POST'])
