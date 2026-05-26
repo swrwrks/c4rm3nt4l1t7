@@ -1,129 +1,114 @@
-const API_BASE = 'http://localhost:8000';
+const API_URL = 'http://localhost:8000';
 const TOKEN_KEY = 'bibobavto_token';
 const USER_KEY = 'bibobavto_user';
 
-// 🔹 Декодирование JWT токена (без проверки подписи, только для чтения данных на клиенте)
-function decodeJWT(token) {
+function decodeToken(token) {
     try {
         const payload = token.split('.')[1];
-        // atob декодирует base64 строку в читаемый JSON
         return JSON.parse(atob(payload));
-    } catch (error) {
-        console.error('Ошибка декодирования JWT:', error);
+    } catch (e) {
+        console.error('Ошибка при чтении токена:', e);
         return null;
     }
 }
 
-// 🔹 ВХОД В СИСТЕМУ
 export async function login(username, password) {
-    // Backend использует OAuth2PasswordRequestForm, поэтому отправляем form-data
     const formData = new URLSearchParams();
     formData.append('username', username);
     formData.append('password', password);
 
-    const res = await fetch(`${API_BASE}/auth/login`, {
+    const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
         body: formData
     });
 
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Ошибка входа');
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Не удалось войти');
     }
 
-    const data = await res.json();
+    const data = await response.json();
 
-    // 1. Сохраняем токен
     localStorage.setItem(TOKEN_KEY, data.access_token);
 
-    // 2. Декодируем и сохраняем данные пользователя
-    const payload = decodeJWT(data.access_token);
+    const payload = decodeToken(data.access_token);
     if (payload) {
         localStorage.setItem(USER_KEY, JSON.stringify({
-            username: payload.sub,
+            username: payload.user_name || payload.username || payload.sub,
             user_id: payload.user_id,
-            email: payload.email || null,    // Будет null, если backend не кладёт email в токен
-            phone: payload.phone || null     // Будет null, если backend не кладёт phone в токен
+            email: payload.email || null,
+            phone: payload.phone || null,
+            favorites: payload.favorites || []
         }));
     }
 
-    // 3. Мгновенно обновляем интерфейс (кнопку в шапке)
-    if (typeof window.updateAuthLink === 'function') {
+    if (window.updateAuthLink) {
         window.updateAuthLink();
     }
-
-    // 4. Перенаправляем на главную
     window.location.hash = '#/';
 }
 
-// 🔹 РЕГИСТРАЦИЯ
 export async function register(username, password, email, phone = null) {
-    const res = await fetch(`${API_BASE}/auth/register`, {
+    const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+            'Content-Type': 'application/json'
+        },
         body: JSON.stringify({
-            username,
-            password,
-            email,
-            phone: phone || null
+            user_name: username,
+            username: username,
+            password: password,
+            email: email,
+            phone: phone
         })
     });
 
-    if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.detail || 'Ошибка регистрации');
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Ошибка регистрации');
     }
 
-    // Успешная регистрация: переключаем на форму входа
-    const loginContainer = document.getElementById('login-form-container');
-    const registerContainer = document.getElementById('register-form-container');
+    const loginForm = document.getElementById('login-form-container');
+    const registerForm = document.getElementById('register-form-container');
 
-    if (loginContainer && registerContainer) {
-        registerContainer.classList.add('hidden');
-        loginContainer.classList.remove('hidden');
+    if (loginForm && registerForm) {
+        registerForm.classList.add('hidden');
+        loginForm.classList.remove('hidden');
     }
 
-    alert('Регистрация успешна! Теперь войдите.');
+    alert('Регистрация прошла успешно! Теперь войдите.');
 }
 
-// 🔹 ВЫХОД ИЗ СИСТЕМЫ
 export function logout() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
 
-    // Сбрасываем кнопку в шапке
-    const btn = document.getElementById('auth-link');
-    if (btn) {
-        btn.textContent = 'Вход / Регистрация';
-        btn.href = '#/auth';
-        btn.classList.remove('auth-user');
-        btn.classList.add('btn');
+    if (window.updateAuthLink) {
+        window.updateAuthLink();
     }
-
     window.location.hash = '#/';
 }
 
-// 🔹 ПРОВЕРКА АВТОРИЗАЦИИ
 export function isAuthenticated() {
     return localStorage.getItem(TOKEN_KEY) !== null;
 }
 
-// 🔹 ПОЛУЧЕНИЕ ДАННЫХ ПОЛЬЗОВАТЕЛЯ
 export function getCurrentUser() {
     const token = localStorage.getItem(TOKEN_KEY);
     if (!token) return null;
 
-    const payload = decodeJWT(token);
+    const payload = decodeToken(token);
     return {
-        username: payload?.sub,
+        username: payload?.user_name || payload?.username || payload?.sub,
         user_id: payload?.user_id,
         email: payload?.email,
         phone: payload?.phone
     };
 }
 
-// 🔹 ОБНОВЛЕНИЕ КНОПКИ В ШАПКЕ
 export function updateAuthLink() {
     const btn = document.getElementById('auth-link');
     if (!btn) return;
@@ -133,16 +118,15 @@ export function updateAuthLink() {
         btn.textContent = user.username || 'Профиль';
         btn.href = '#/profile';
         btn.classList.add('auth-user');
-        btn.classList.remove('btn');
+        btn.classList.remove('btn-primary');
     } else {
         btn.textContent = 'Вход / Регистрация';
         btn.href = '#/auth';
         btn.classList.remove('auth-user');
-        btn.classList.add('btn');
+        btn.classList.add('btn-primary');
     }
 }
 
-// 🔹 ЗАЩИТА МАРШРУТОВ
 export function requireAuth() {
     if (!isAuthenticated()) {
         window.location.hash = '#/auth';

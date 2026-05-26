@@ -1,4 +1,3 @@
-// Простой API-клиент с авто-подстановкой токена
 
 export const api = {
     async request(endpoint, options = {}) {

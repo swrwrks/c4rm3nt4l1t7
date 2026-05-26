@@ -2,10 +2,13 @@
     <div class="page-card">
         <h2 class="page-title">Избранное</h2>
 
-        <div id="favorites-list" class="favorites-grid"></div>
+        <!-- Сюда JS будет добавлять машины -->
+        <div id="favorites-list"></div>
+            <p style="color: #666; margin-bottom: 1rem; font-size: 1rem;">Если собираетесь купить автомобиль, то звоните по номеру: +7 (999) 000-00-00</p>
 
-        <div id="favorites-empty" class="empty-state hidden">
-            <p>В избранном пока пусто</p>
+
+        <div id="favorites-empty" style="display: none; text-align: center; padding: 2rem 0;">
+            <p style="color: #666; margin-bottom: 1rem; font-size: 1rem;">В избранном пока пусто</p>
             <a href="#/catalog" class="btn-compact btn-primary" data-link>Перейти в каталог</a>
         </div>
     </div>

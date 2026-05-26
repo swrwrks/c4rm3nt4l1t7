@@ -1,5 +1,5 @@
 /* =========================================
-   1. Сброс и базовые настройки
+   1. БАЗОВЫЕ НАСТРОЙКИ
    ========================================= */
 * {
     box-sizing: border-box;
@@ -18,22 +18,27 @@ body {
 
 a {
     text-decoration: none;
-    color: #dc3545; /* Красный цвет ссылок по умолчанию */
+    color: #dc3545;
 }
 
 a:hover {
-    color: #c82333; /* Темно-красный при наведении */
+    color: #c82333;
+}
+
+/* Скрываем элементы (нужно для переключения форм входа/регистрации) */
+.hidden {
+    display: none !important;
 }
 
 /* =========================================
-   2. Навигация (Header)
+   2. ШАПКА И НАВИГАЦИЯ
    ========================================= */
 .navbar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
-    background: #fff;
+    background: #fffa;
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
     position: sticky;
     top: 0;
@@ -43,13 +48,13 @@ a:hover {
 .nav-logo {
     font-size: 1.5rem;
     font-weight: 700;
-    text-decoration: none;
     color: #111;
     letter-spacing: -0.5px;
 }
 
 .nav-menu {
     display: flex;
+    align-items: center;
     gap: 1.5rem;
     list-style: none;
     margin: 0;
@@ -57,7 +62,6 @@ a:hover {
 }
 
 .nav-menu a {
-    text-decoration: none;
     color: #555;
     font-weight: 500;
     padding: 0.5rem 0.8rem;
@@ -65,14 +69,12 @@ a:hover {
     transition: background-color 0.2s ease, color 0.2s ease;
 }
 
-/* 🔴 Красное выделение для активного пункта меню и ховера */
 .nav-menu a:hover,
 .nav-menu a.active {
-    background-color: rgba(220, 53, 69, 0.1); /* Полупрозрачный красный */
-    color: #dc3545; /* Красный текст */
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
 }
 
-/* Кнопка Входа/Регистрации */
 #auth-link {
     background: #FF3333;
     color: #fff !important;
@@ -84,8 +86,16 @@ a:hover {
     background: #E60000;
 }
 
+.auth-user {
+    background: #28a745 !important;
+}
+
+.auth-user:hover {
+    background: #218838 !important;
+}
+
 /* =========================================
-   3. Основной контент и Футер
+   3. ОСНОВНОЙ КОНТЕНТ И ПОДВАЛ
    ========================================= */
 main#app {
     flex: 1;
@@ -105,7 +115,7 @@ footer {
 }
 
 /* =========================================
-   4. Компоненты: Карточки и Контейнеры
+   4. ОБЩИЕ КОМПОНЕНТЫ (карточки, заголовки)
    ========================================= */
 .card, .page-container {
     background: #fff;
@@ -115,7 +125,6 @@ footer {
     margin-bottom: 2rem;
 }
 
-/* Центрирование заголовков страниц (например "О нас") */
 #app h2 {
     text-align: center;
     margin: 0 auto 2rem auto;
@@ -123,7 +132,7 @@ footer {
 }
 
 /* =========================================
-   5. Формы и Кнопки
+   5. ФОРМЫ И КНОПКИ
    ========================================= */
 .form-group {
     margin-bottom: 1rem;
@@ -135,7 +144,8 @@ footer {
     font-weight: 500;
 }
 
-.form-group input {
+.form-group input,
+.form-group select {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
@@ -143,8 +153,8 @@ footer {
     transition: border-color 0.2s;
 }
 
-/* 🔴 Красная обводка при фокусе */
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
     outline: none;
     border-color: #dc3545;
     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
@@ -160,7 +170,6 @@ footer {
     transition: background-color 0.2s;
 }
 
-/* 🔴 Красная основная кнопка */
 .btn-primary {
     background: #dc3545;
     color: #fff;
@@ -168,6 +177,8 @@ footer {
 
 .btn-primary:hover {
     background: #c82333;
+    color: #fff;
+    text-decoration: none;
 }
 
 .btn-block {
@@ -177,9 +188,10 @@ footer {
 }
 
 /* =========================================
-   6. Личный кабинет (Profile)
+   6. СТРАНИЦА ВХОДА / РЕГИСТРАЦИИ
    ========================================= */
-.profile-card {
+.auth-container,
+#app .card {
     max-width: 450px;
     margin: 2rem auto;
     padding: 2rem;
@@ -188,120 +200,6 @@ footer {
     box-shadow: 0 4px 15px rgba(0,0,0,0.08);
 }
 
-.profile-info p {
-    margin: 0.5rem 0;
-    font-size: 1rem;
-}
-
-/* 🔴 Красные ссылки в меню профиля */
-.menu-link {
-    display: block;
-    text-align: center;
-    padding: 0.8rem;
-    border: 1px solid #e9ecef;
-    border-radius: 8px;
-    color: #333;
-    font-weight: 500;
-    margin-bottom: 0.8rem;
-    transition: all 0.2s;
-}
-
-.menu-link:hover {
-    background-color: rgba(220, 53, 69, 0.05);
-    border-color: #dc3545;
-    color: #dc3545;
-}
-
-/* =========================================
-   7. Таблицы и Бейджи
-   ========================================= */
-.requests-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-}
-
-.requests-table th,
-.requests-table td {
-    text-align: left;
-    padding: 12px;
-    border-bottom: 1px solid #eee;
-}
-
-.requests-table th {
-    background-color: #f8f9fa;
-    font-weight: 600;
-    color: #495057;
-}
-
-.badge {
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: white;
-}
-
-.badge-success { background-color: #28a745; }
-.badge-warning { background-color: #ffc107; color: #333; }
-.badge-danger  { background-color: #dc3545; }
-
-/* =========================================
-   8. Адаптивность (Мобильные)
-   ========================================= */
-.burger-btn {
-    display: none;
-    font-size: 1.5rem;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 0.5rem;
-}
-
-@media (max-width: 768px) {
-    .nav-menu {
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        background: #fff;
-        padding: 1rem;
-        gap: 0.5rem;
-        display: none;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-
-    .nav-menu.active {
-        display: flex;
-    }
-
-    .burger-btn {
-        display: block;
-    }
-
-    .profile-card {
-        padding: 1.5rem;
-        margin: 1rem;
-    }
-}
-.btn-primary:hover {
-    color: #ffffff !important;
-    background-color: #dc3545 !important;
-    text-decoration: none !important;
-}
-/* === СТИЛИ ДЛЯ ФОРМЫ ВХОДА (как профиль) === */
-.auth-container,
-#app .card {
-    max-width: 450px;        /* Такая же ширина как у профиля */
-    margin: 2rem auto;       /* Центрирование */
-    padding: 2rem;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-}
-
-/* Заголовок формы входа */
 .auth-container h2,
 #app .card h2 {
     text-align: center;
@@ -309,22 +207,13 @@ footer {
     font-size: 1.5rem;
 }
 
-/* Поля ввода в форме */
-.auth-container .form-group,
-#app .card .form-group {
-    margin-bottom: 1.2rem;
-}
-
-/* Кнопка входа */
-.auth-container .btn-primary,
-#app .card .btn-primary {
+.auth-container .btn-primary {
     margin-top: 1.5rem;
     padding: 0.9rem;
     font-size: 1rem;
     font-weight: 600;
 }
 
-/* Ссылка "Зарегистрироваться" */
 .auth-switch {
     text-align: center;
     margin-top: 1rem;
@@ -340,26 +229,18 @@ footer {
     text-decoration: underline;
 }
 
-/* Адаптив для мобильных */
-@media (max-width: 768px) {
-    .auth-container,
-    #app .card {
-        padding: 1.5rem;
-    }
-}
-/* === 3 НЕДЕЛЯ: КАТАЛОГ === */
-
-/* Основной контейнер (2 колонки) */
+/* =========================================
+   7. КАТАЛОГ (Фильтры + Сетка)
+   ========================================= */
 .catalog-layout {
     display: grid;
-    grid-template-columns: 280px 1fr; /* Левая колонка фикс, правая - гибкая */
+    grid-template-columns: 280px 1fr;
     gap: 2rem;
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
 }
 
-/* Стили фильтров */
 .filters-panel {
     background: #fff;
     padding: 1.5rem;
@@ -379,9 +260,10 @@ footer {
 
 .filter-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
     font-weight: 500;
     font-size: 0.9rem;
+    color: #555;
 }
 
 .filter-group select,
@@ -390,23 +272,18 @@ footer {
     padding: 0.8rem;
     border: 1px solid #ddd;
     border-radius: 8px;
-    box-sizing: border-box;
 }
 
-.btn-block {
-    width: 100%;
-    margin-top: 1rem;
-}
-
-/* Сетка автомобилей */
 .cars-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Две колонки */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1.5rem;
     align-content: start;
 }
 
-/* Карточка авто */
+/* =========================================
+   8. КАРТОЧКИ АВТОМОБИЛЕЙ
+   ========================================= */
 .car-card {
     background: #fff;
     border-radius: 12px;
@@ -414,9 +291,13 @@ footer {
     box-shadow: 0 4px 15px rgba(0,0,0,0.05);
     display: flex;
     flex-direction: column;
+    transition: transform 0.2s;
 }
 
-/* Серая заглушка картинки */
+.car-card:hover {
+    transform: translateY(-4px);
+}
+
 .car-placeholder {
     background: #f0f0f0;
     height: 180px;
@@ -427,9 +308,11 @@ footer {
     font-weight: 500;
 }
 
-/* Информация в карточке */
 .car-details {
     padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
 }
 
 .car-details h4 {
@@ -446,83 +329,15 @@ footer {
 .car-price {
     font-size: 1.3rem;
     font-weight: 700;
-    color: #dc3545; /* Красная цена */
+    color: #dc3545;
     margin-bottom: 1rem;
 }
 
-/* Кнопка избранного */
 .btn-fav {
+    margin-top: auto;
     width: 100%;
     padding: 0.8rem;
-    background: #dc3545; /* Красная */
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 500;
-}
-
-.btn-fav:hover {
-    background: #c82333;
-}
-
-.btn-fav.active {
-    background: #ff6b6b; /* Светлее, если в избранном */
-}
-
-/* Адаптив для мобильных */
-@media (max-width: 768px) {
-    .catalog-layout {
-        grid-template-columns: 1fr;
-    }
-}
-/* === СТРАНИЦА ИЗБРАННОГО === */
-.favorites-page {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-}
-
-.favorites-page h2 {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.favorites-list {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.favorite-item {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.fav-car-info h4 {
-    margin: 0 0 0.5rem 0;
-    font-size: 1.2rem;
-}
-
-.fav-car-info p {
-    margin: 0 0 0.5rem 0;
-    color: #666;
-}
-
-.fav-price {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: #dc3545;
-}
-
-.btn-remove {
-    padding: 0.7rem 1.5rem;
-    background: #6c757d;
+    background: #dc3545;
     color: #fff;
     border: none;
     border-radius: 8px;
@@ -531,93 +346,57 @@ footer {
     transition: background 0.2s;
 }
 
-.btn-remove:hover {
-    background: #5a6268;
+.btn-fav:hover {
+    background: #c82333;
 }
 
-@media (max-width: 600px) {
-    .favorite-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-
-    .btn-remove {
-        width: 100%;
-    }
-}
-/* === КАТАЛОГ + ПАГИНАЦИЯ === */
-.catalog-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 2rem;
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+.btn-fav.active {
+    background: #ff6b6b;
 }
 
-.filters-panel {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 12px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-    height: fit-content;
-}
-
-.filter-group { margin-bottom: 1rem; }
-.filter-group label { display: block; margin-bottom: 0.4rem; font-weight: 500; font-size: 0.9rem; color: #555; }
-.filter-group select, .filter-group input {
-    width: 100%; padding: 0.8rem; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;
-}
-
-.cars-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    align-content: start;
-}
-
-.car-card {
-    background: #fff; border-radius: 12px; overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; flex-direction: column;
-    transition: transform 0.2s;
-}
-.car-card:hover { transform: translateY(-4px); }
-
-.car-placeholder {
-    background: #f0f0f0; height: 180px; display: flex; align-items: center;
-    justify-content: center; color: #888; font-weight: 500;
-}
-
-.car-details { padding: 1.2rem; display: flex; flex-direction: column; flex-grow: 1; }
-.car-details h4 { margin: 0 0 0.5rem 0; font-size: 1.1rem; }
-.car-details p { margin: 0 0 1rem 0; color: #666; font-size: 0.9rem; }
-.car-price { font-size: 1.3rem; font-weight: 700; color: #dc3545; margin-bottom: 1rem; }
-
-.btn-fav {
-    margin-top: auto; width: 100%; padding: 0.8rem; background: #dc3545; color: #fff;
-    border: none; border-radius: 8px; cursor: pointer; font-weight: 500; transition: background 0.2s;
-}
-.btn-fav:hover { background: #c82333; }
-.btn-fav.active { background: #ff6b6b; }
-
-/* Пагинация */
+/* =========================================
+   9. ПАГИНАЦИЯ
+   ========================================= */
 .pagination {
-    display: flex; justify-content: center; align-items: center; gap: 1rem;
-    margin-top: 2rem; padding: 1rem 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding: 1rem 0;
 }
-.btn-pagination {
-    padding: 0.6rem 1.2rem; background: #fff; border: 2px solid #dc3545; color: #dc3545;
-    border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;
-}
-.btn-pagination:hover:not(:disabled) { background: #dc3545; color: #fff; }
-.btn-pagination:disabled { border-color: #ccc; color: #ccc; cursor: not-allowed; }
-#page-info { font-size: 1rem; color: #555; font-weight: 500; }
 
-@media (max-width: 768px) {
-    .catalog-layout { grid-template-columns: 1fr; }
+.btn-pagination {
+    padding: 0.6rem 1.2rem;
+    background: #fff;
+    border: 2px solid #dc3545;
+    color: #dc3545;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
 }
-/* === КОМПАКТНЫЙ ПРОФИЛЬ И СТРАНИЦЫ === */
+
+.btn-pagination:hover:not(:disabled) {
+    background: #dc3545;
+    color: #fff;
+}
+
+.btn-pagination:disabled {
+    border-color: #ccc;
+    color: #ccc;
+    cursor: not-allowed;
+}
+
+#page-info {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
+}
+
+/* =========================================
+   10. ЛИЧНЫЙ КАБИНЕТ И ИЗБРАННОЕ
+   ========================================= */
 .profile-wrapper, .page-wrapper {
     display: flex;
     justify-content: center;
@@ -641,7 +420,6 @@ footer {
     color: #222;
 }
 
-/* Данные пользователя */
 .profile-data { margin-bottom: 1.5rem; }
 .data-row {
     display: flex;
@@ -650,12 +428,13 @@ footer {
     border-bottom: 1px solid #f0f0f0;
     font-size: 0.95rem;
 }
+
 .data-row:last-child { border-bottom: none; }
 .data-row .label { color: #666; font-weight: 500; }
 .data-row .value { font-weight: 600; color: #111; text-align: right; }
 
-/* Компактные кнопки */
 .profile-actions { display: flex; flex-direction: column; gap: 0.7rem; }
+
 .btn-compact {
     display: block;
     width: 100%;
@@ -671,20 +450,19 @@ footer {
     transition: all 0.2s ease;
     text-decoration: none;
 }
+
 .btn-compact:hover {
     background: #fff;
     border-color: #dc3545;
     color: #dc3545;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
 }
+
 .btn-logout { border-color: #ff4d4f; color: #ff4d4f; }
 .btn-logout:hover { background: #ff4d4f; color: #fff; }
-.btn-primary { background: #dc3545; color: #fff; border: none; }
-.btn-primary:hover { background: #c82333; color: #fff; transform: translateY(-2px); }
 
-/* Избранное */
 .favorites-grid { display: flex; flex-direction: column; gap: 0.6rem; margin-bottom: 1rem; }
+
 .fav-item-compact {
     display: flex;
     justify-content: space-between;
@@ -694,6 +472,7 @@ footer {
     border-radius: 8px;
     font-size: 0.95rem;
 }
+
 .btn-remove-sm {
     background: none;
     border: none;
@@ -703,12 +482,54 @@ footer {
     padding: 0 0.3rem;
     transition: color 0.2s;
 }
+
 .btn-remove-sm:hover { color: #dc3545; }
 
 .empty-state { text-align: center; padding: 1.5rem 0; }
 .empty-state p { margin: 0 0 1rem; color: #666; font-size: 0.95rem; }
 
-/* Настройки */
+/* Карточки реальных машин в избранном */
+.fav-card-real {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.2rem;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    margin-bottom: 0.8rem;
+    transition: transform 0.2s;
+}
+
+.fav-card-real:hover {
+    transform: translateY(-2px);
+    border-color: #dc3545;
+}
+
+.fav-card-info h4 { margin: 0 0 0.3rem 0; font-size: 1.1rem; color: #333; }
+.fav-car-year { margin: 0 0 0.5rem 0; color: #777; font-size: 0.9rem; }
+.fav-car-price { font-size: 1.2rem; font-weight: 700; color: #dc3545; }
+
+.btn-remove-fav {
+    background: #f8f9fa;
+    color: #666;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+}
+
+.btn-remove-fav:hover {
+    background: #ff4d4f;
+    color: #fff;
+}
+
+/* =========================================
+   11. НАСТРОЙКИ
+   ========================================= */
 .compact-form .form-group { margin-bottom: 1rem; }
 .compact-form label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: #555; font-weight: 500; }
 .compact-form input {
@@ -719,9 +540,67 @@ footer {
     font-size: 0.95rem;
     transition: border-color 0.2s;
 }
+
 .compact-form input:focus { outline: none; border-color: #dc3545; }
 
-/* Мобильная адаптация */
+/* =========================================
+   12. СЧЁТЧИК ЛАЙКОВ В КАТАЛОГЕ
+   ========================================= */
+.fav-stats {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.8rem 0;
+    padding: 0.4rem 0.8rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    width: fit-content;
+}
+
+.fav-icon { font-size: 1rem; }
+.fav-count { font-weight: 700; color: #dc3545; font-size: 1rem; }
+.fav-label { color: #666; font-size: 0.85rem; }
+
+/* =========================================
+   13. АДАПТИВНОСТЬ (МОБИЛЬНАЯ ВЕРСИЯ)
+   ========================================= */
+.burger-btn {
+    display: none;
+    font-size: 1.5rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .nav-menu {
+        position: absolute;
+        top: 100%; left: 0; right: 0;
+        flex-direction: column;
+        background: #fff;
+        padding: 1rem;
+        gap: 0.5rem;
+        display: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .nav-menu.active { display: flex; }
+    .burger-btn { display: block; }
+
+    .catalog-layout { grid-template-columns: 1fr; }
+    .profile-card, .auth-container { padding: 1.5rem; margin: 1rem; }
+
+    .favorite-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .btn-remove { width: 100%; }
+}
+
 @media (max-width: 480px) {
     .profile-card, .page-card { padding: 1.4rem; }
     .profile-title, .page-title { font-size: 1.25rem; }

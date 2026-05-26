@@ -13,7 +13,6 @@ export function init() {
         return;
     }
 
-    // Переключение на регистрацию
     const showRegisterLink = document.getElementById('show-register');
     if (showRegisterLink) {
         showRegisterLink.addEventListener('click', (e) => {
@@ -23,7 +22,6 @@ export function init() {
         });
     }
 
-    // Переключение на вход
     const showLoginLink = document.getElementById('show-login');
     if (showLoginLink) {
         showLoginLink.addEventListener('click', (e) => {
@@ -33,7 +31,6 @@ export function init() {
         });
     }
 
-    // Обработка формы входа
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
@@ -50,7 +47,6 @@ export function init() {
         });
     }
 
-    // Обработка формы регистрации
     const registerForm = document.getElementById('register-form');
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {

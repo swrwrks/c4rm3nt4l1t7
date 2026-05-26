@@ -14,7 +14,6 @@ export function init() {
     let allBrands = [];
     let filteredCars = [];
 
-    // 🔹 Настройки пагинации
     const ITEMS_PER_PAGE = 6;
     let currentPage = 1;
 
@@ -27,63 +26,156 @@ export function init() {
         return brand ? brand.name : 'Неизвестно';
     }
 
-    // 🔹 Отрисовка карточек (только текущая страница)
+    function isAuthenticated() {
+        return localStorage.getItem('bibobavto_token') !== null;
+    }
+
+    function getCurrentUser() {
+        const user = localStorage.getItem('bibobavto_user');
+        return user ? JSON.parse(user) : null;
+    }
+
+    function getFavLabel(count) {
+        if (count === 1) return 'пользователь';
+        if (count < 5) return 'пользователя';
+        return 'пользователей';
+    }
+
     function renderCars(cars, page = 1) {
         if (!grid) return;
 
         if (!cars || cars.length === 0) {
             grid.innerHTML = '<p style="text-align:center; width:100%; padding:2rem; color:#888;">Ничего не найдено</p>';
-            pagination.style.display = 'none';
+            if (pagination) pagination.style.display = 'none';
             return;
         }
 
-        // Вычисляем пагинацию
         const totalPages = Math.ceil(cars.length / ITEMS_PER_PAGE);
         const startIndex = (page - 1) * ITEMS_PER_PAGE;
         const endIndex = startIndex + ITEMS_PER_PAGE;
         const pageCars = cars.slice(startIndex, endIndex);
 
-        const favs = JSON.parse(localStorage.getItem('bibobavto_favorites') || '[]');
+        const user = getCurrentUser();
+        const userFavorites = user?.favorites || [];
 
         grid.innerHTML = pageCars.map(car => {
-            const isFav = favs.includes(car.id);
+            const isFav = userFavorites.includes(car.id);
             const brandName = getBrandName(car.brand_id);
+            const favCount = car.favorites_count || 0;
 
             return `
-                <div class="car-card">
-                    <div class="car-placeholder">${brandName} ${car.model}</div>
+                <div class="car-card" data-id="${car.id}">
                     <div class="car-details">
                         <h4>${brandName} ${car.model}</h4>
                         <p>${car.year} г. • ${car.color} • ${car.mileage?.toLocaleString() || 'N/A'} км</p>
                         <div class="car-price">${formatPrice(car.price)}</div>
+
+                        <div class="fav-stats">
+                            <span class="fav-icon">❤️</span>
+                            <span class="fav-count">${favCount}</span>
+                            <span class="fav-label">${getFavLabel(favCount)}</span>
+                        </div>
+
                         <button class="btn-fav ${isFav ? 'active' : ''}" data-id="${car.id}">
-                            ${isFav ? 'В избранном' : 'В избранное'}
+                            ${isFav ? '✓ В избранном' : '+ В избранное'}
                         </button>
                     </div>
                 </div>
             `;
         }).join('');
 
-        // Навешиваем события на кнопки избранного
         document.querySelectorAll('.btn-fav').forEach(btn => {
-            btn.addEventListener('click', () => window.toggleFav(Number(btn.dataset.id)));
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const carId = parseInt(btn.dataset.id);
+                toggleFavorite(carId, btn);
+            });
         });
 
-        // 🔹 Обновляем пагинацию
         if (totalPages > 1) {
-            pagination.style.display = 'flex';
-            pageInfo.textContent = `Страница ${page} из ${totalPages}`;
-            prevBtn.disabled = page === 1;
-            nextBtn.disabled = page === totalPages;
+            if (pagination) {
+                pagination.style.display = 'flex';
+                pageInfo.textContent = `Страница ${page} из ${totalPages}`;
+                if (prevBtn) prevBtn.disabled = page === 1;
+                if (nextBtn) nextBtn.disabled = page === totalPages;
+            }
         } else {
-            pagination.style.display = 'none';
+            if (pagination) pagination.style.display = 'none';
         }
     }
 
-    // 🔹 Фильтрация + сброс на 1 страницу
-    function filterCars(filters) {
-        currentPage = 1; // Сброс при новом фильтре
+    async function toggleFavorite(carId, btnElement) {
+        const token = localStorage.getItem('bibobavto_token');
 
+        if (!token) {
+            alert('Пожалуйста, войдите в аккаунт, чтобы добавлять в избранное');
+            window.location.hash = '#/auth';
+            return;
+        }
+
+        const user = getCurrentUser();
+        const userFavorites = user?.favorites || [];
+        const isAdding = !userFavorites.includes(carId);
+
+        // Оптимистичное обновление интерфейса (счётчик меняется сразу)
+        const countEl = btnElement.parentElement.querySelector('.fav-count');
+        const labelEl = btnElement.parentElement.querySelector('.fav-label');
+
+        if (countEl) {
+            let count = parseInt(countEl.textContent) || 0;
+            count = isAdding ? count + 1 : count - 1;
+            countEl.textContent = count;
+            if (labelEl) labelEl.textContent = getFavLabel(count);
+        }
+
+        // Обновляем состояние кнопки временно
+        btnElement.classList.toggle('active');
+        btnElement.textContent = isAdding ? '✓ В избранном' : '+ В избранное';
+
+        try {
+            const response = await fetch(`http://localhost:8000/users/favorites/toggle/${carId}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                // Если ошибка, откатываем изменения
+                if (countEl) {
+                    let count = parseInt(countEl.textContent) || 0;
+                    countEl.textContent = isAdding ? count - 1 : count + 1;
+                    if (labelEl) labelEl.textContent = getFavLabel(parseInt(countEl.textContent));
+                }
+                btnElement.classList.toggle('active');
+                btnElement.textContent = isAdding ? '+ В избранное' : '✓ В избранном';
+
+                if (response.status === 401) {
+                    throw new Error('Необходимо войти в систему заново');
+                }
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.detail || 'Ошибка сервера');
+            }
+
+            const result = await response.json();
+
+            // Сохраняем обновленный список избранного
+            const storedUser = JSON.parse(localStorage.getItem('bibobavto_user') || '{}');
+            storedUser.favorites = result.favorites;
+            localStorage.setItem('bibobavto_user', JSON.stringify(storedUser));
+
+            // Перезагружаем каталог для синхронизации с сервером
+            await loadCarsFromBackend();
+
+        } catch (error) {
+            console.error('Error toggling favorite:', error);
+            alert(error.message || 'Произошла ошибка. Попробуйте позже.');
+        }
+    }
+
+    function filterCars(filters) {
+        currentPage = 1;
         let filtered = [...allCars];
 
         if (filters.brand) {
@@ -100,7 +192,6 @@ export function init() {
         renderCars(filteredCars, currentPage);
     }
 
-    // 🔹 Загрузка данных с Backend
     async function loadCarsFromBackend() {
         if (!grid) return;
         grid.innerHTML = '<p style="text-align:center; padding:2rem;">Загрузка...</p>';
@@ -116,7 +207,6 @@ export function init() {
             allCars = await carsRes.json();
             allBrands = brandsRes.ok ? await brandsRes.json() : [];
 
-            // Заполняем select марок
             const brandSelect = document.getElementById('filter-brand');
             if (brandSelect && allBrands.length > 0) {
                 const defaultOption = brandSelect.options[0];
@@ -133,18 +223,18 @@ export function init() {
 
             filteredCars = [...allCars];
             renderCars(filteredCars, currentPage);
+
         } catch (e) {
             console.error('Ошибка загрузки:', e);
             grid.innerHTML = `
                 <p style="text-align:center; padding:2rem; color:#dc3545;">
                     Не удалось загрузить каталог.<br>
-                    Убедись, что backend запущен на порту 8000 и CORS настроен.
+                    Убедись, что backend запущен на порту 8000.
                 </p>
             `;
         }
     }
 
-    // 🔹 Обработчики пагинации
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             if (currentPage > 1) {
@@ -166,7 +256,6 @@ export function init() {
         });
     }
 
-    //  Обработчик кнопки "Применить"
     if (applyBtn) {
         applyBtn.addEventListener('click', () => {
             const filters = {
@@ -180,21 +269,5 @@ export function init() {
         });
     }
 
-    // 🔹 Глобальная функция для избранного
-    window.toggleFav = (id) => {
-        let favs = JSON.parse(localStorage.getItem('bibobavto_favorites') || '[]');
-        favs = favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id];
-        localStorage.setItem('bibobavto_favorites', JSON.stringify(favs));
-
-        // Обновляем UI без полной перерисовки
-        const btn = document.querySelector(`.btn-fav[data-id="${id}"]`);
-        if (btn) {
-            const isFav = favs.includes(id);
-            btn.classList.toggle('active', isFav);
-            btn.textContent = isFav ? 'В избранном' : 'В избранное';
-        }
-    };
-
-    // Первая загрузка
     loadCarsFromBackend();
 }
